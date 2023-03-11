@@ -3,7 +3,7 @@ import boto3
 import uuid
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Sneaker
+from .models import Sneaker, Customization
 from .forms import CleaningForm
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -31,7 +31,8 @@ def sneakers_index(request):
 def sneaker_details(request, sneaker_id):
     sneaker = Sneaker.objects.get(id=sneaker_id)
     cleaning_form = CleaningForm()
-    return render(request, 'sneakers/details.html', {'sneaker': sneaker, 'cleaning_form': cleaning_form})
+    customizations_sneaker_doesnt_have = Customization.objects.exclude(id__in = sneaker.customizations.all().values_list('id'))
+    return render(request, 'sneakers/details.html', {'sneaker': sneaker, 'cleaning_form': cleaning_form, 'customizations': customizations_sneaker_doesnt_have})
 
 
 class SneakerCreate(CreateView):
@@ -55,6 +56,10 @@ def add_cleaning(request, sneaker_id):
         new_cleaning.sneaker_id = sneaker_id
         new_cleaning.save()
     return redirect('details', sneaker_id=sneaker_id)
+
+def assoc_customization(request, sneaker_id, customization_id):
+    Sneaker.objects.get(id=sneaker_id).customizations.add(customization_id)
+    return redirect('details',sneaker_id = sneaker_id)
 
 
 def add_photo(request, sneaker_id):

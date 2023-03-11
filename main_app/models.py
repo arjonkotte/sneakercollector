@@ -9,12 +9,32 @@ CLEAN_LEVELS = (
     ('D', 'Detailed')
 )
 
+CUSTOMIZATION_TYPES = (
+    ('M', 'Maintenance'),
+    ('S','Stylish'),
+    ('P','Personal')
+)
+
+class Customization(models.Model):
+    name = models.CharField(max_length=50)
+    type = models.CharField(
+        max_length = 1,
+        choices = CUSTOMIZATION_TYPES,
+        default = CUSTOMIZATION_TYPES[0][0]
+    )
+
+    def __str__(self):
+        return f"{self.get_type_display()}"
+
+
 
 class Sneaker(models.Model):
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     year = models.IntegerField()
     description = models.TextField(max_length=250)
+    customizations = models.ManyToManyField(Customization)
+    
 
     def __str__(self):
         return self.brand + ' ' + self.model

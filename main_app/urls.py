@@ -14,4 +14,5 @@ urlpatterns = [
     path('sneakers/<int:sneaker_id>/add_photo/',
          views.add_photo, name='add_photo'),
      path('sneakers/<int:sneaker_id>/add_cleaning/', views.add_cleaning, name='add_cleaning'),
+     path('sneakers/<int:sneaker_id>/assoc_customization/<int:customization_id>/', views.assoc_customization, name='assoc_customization')
 ]
