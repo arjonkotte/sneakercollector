@@ -3,7 +3,14 @@ from django.urls import reverse
 
 # Create your models here.
 
-class Sneaker(models.Model):  
+CLEAN_LEVELS = (
+    ('B', 'Basic'),
+    ('I', 'Intermediate'),
+    ('D', 'Detailed')
+)
+
+
+class Sneaker(models.Model):
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     year = models.IntegerField()
@@ -11,9 +18,27 @@ class Sneaker(models.Model):
 
     def __str__(self):
         return self.brand + ' ' + self.model
-    
+
     def get_absolute_url(self):
         return reverse('details', kwargs={'sneaker_id': self.id})
+
+
+class Cleaning(models.Model):
+    date = models.DateField('cleaning date')
+    cleaning_level = models.CharField(
+        max_length=1,
+        choices=CLEAN_LEVELS,
+        default=CLEAN_LEVELS[0][0]
+    )
+
+    sneaker = models.ForeignKey(Sneaker, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.get_cleaning_level_display()} on {self.date}"
+
+    class Meta:
+        ordering = ['-date']
+
 
 class Photo(models.Model):
     url = models.CharField(max_length=200)
